@@ -49,9 +49,9 @@ public class ParkingService {
 <span class="fc" id="L49">                System.out.println(&quot;Please park your vehicle in spot number:&quot;+parkingSpot.getId());</span>
 <span class="fc" id="L50">                System.out.println(&quot;Recorded in-time for vehicle number:&quot;+vehicleRegNumber+&quot; is:&quot;+inTime);</span>
             }
-<span class="pc" id="L52">        }catch(Exception e){</span>
+<span class="nc" id="L52">        }catch(Exception e){</span>
 <span class="nc" id="L53">            logger.error(&quot;Unable to process incoming vehicle&quot;,e);</span>
-        }
+<span class="fc" id="L54">        }</span>
 <span class="fc" id="L55">    }</span>
 
     private String getVehichleRegNumber() throws Exception {
@@ -67,14 +67,14 @@ public class ParkingService {
 <span class="fc" id="L67">            parkingNumber = parkingSpotDAO.getNextAvailableSlot(parkingType);</span>
 <span class="pc bpc" id="L68" title="1 of 2 branches missed.">            if(parkingNumber &gt; 0){</span>
 <span class="fc" id="L69">                parkingSpot = new ParkingSpot(parkingNumber,parkingType, true);</span>
-<span class="fc" id="L70">            }else{</span>
+            }else{
 <span class="nc" id="L71">                throw new Exception(&quot;Error fetching parking number from DB. Parking slots might be full&quot;);</span>
             }
 <span class="nc" id="L73">        }catch(IllegalArgumentException ie){</span>
 <span class="nc" id="L74">            logger.error(&quot;Error parsing user input for type of vehicle&quot;, ie);</span>
 <span class="nc" id="L75">        }catch(Exception e){</span>
 <span class="nc" id="L76">            logger.error(&quot;Error fetching next available parking slot&quot;, e);</span>
-        }
+<span class="pc" id="L77">        }</span>
 <span class="fc" id="L78">        return parkingSpot;</span>
     }
 
@@ -115,7 +115,7 @@ public class ParkingService {
             }
 <span class="nc" id="L116">        }catch(Exception e){</span>
 <span class="nc" id="L117">            logger.error(&quot;Unable to process exiting vehicle&quot;,e);</span>
-        }
+<span class="fc" id="L118">        }</span>
 <span class="fc" id="L119">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

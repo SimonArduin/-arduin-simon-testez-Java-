@@ -34,9 +34,9 @@ import java.sql.Timestamp;
 <span class="fc" id="L34">            return ps.execute();</span>
 <span class="nc" id="L35">        }catch (Exception ex){</span>
 <span class="nc" id="L36">            logger.error(&quot;Error fetching next available slot&quot;,ex);</span>
-<span class="nc" id="L37">        }finally {</span>
-<span class="fc" id="L38">            dataBaseConfig.closeConnection(con);</span>
-<span class="fc" id="L39">            return false;</span>
+        }finally {
+<span class="pc" id="L38">            dataBaseConfig.closeConnection(con);</span>
+<span class="pc" id="L39">            return false;</span>
         }
     }
 
@@ -61,11 +61,11 @@ import java.sql.Timestamp;
             }
 <span class="fc" id="L62">            dataBaseConfig.closeResultSet(rs);</span>
 <span class="fc" id="L63">            dataBaseConfig.closePreparedStatement(ps);</span>
-<span class="pc" id="L64">        }catch (Exception ex){</span>
+<span class="nc" id="L64">        }catch (Exception ex){</span>
 <span class="nc" id="L65">            logger.error(&quot;Error fetching next available slot&quot;,ex);</span>
-<span class="nc" id="L66">        }finally {</span>
-<span class="fc" id="L67">            dataBaseConfig.closeConnection(con);</span>
-<span class="fc" id="L68">            return ticket;</span>
+        }finally {
+<span class="pc" id="L67">            dataBaseConfig.closeConnection(con);</span>
+<span class="pc" id="L68">            return ticket;</span>
         }
     }
 
