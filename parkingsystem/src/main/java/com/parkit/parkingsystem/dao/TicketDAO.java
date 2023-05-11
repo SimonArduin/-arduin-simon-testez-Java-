@@ -88,6 +88,27 @@ public class TicketDAO {
     }
 
     public int getNbTicket(String vehicleRegNumber){
-        return 0;
+        /*
+        search database for vehicleRegNumber
+        ResultSet from query : SELECT COUNT(*) FROM ticket WHERE VEHICLE_REG_NUMBER=vehicleRegNumber;
+        NbTicket = number of results in ResultSet*/
+        Connection con = null;
+        int result=-1;
+        try {
+            con = dataBaseConfig.getConnection();
+            PreparedStatement ps = con.prepareStatement(DBConstants.GET_NUMBER_OF_TICKETS);
+            ps.setString(1, vehicleRegNumber);
+            ResultSet rs = ps.executeQuery();
+            if(rs.next()){
+                result = rs.getInt(1);
+            }
+            dataBaseConfig.closeResultSet(rs);
+            dataBaseConfig.closePreparedStatement(ps);
+        }catch (Exception ex){
+            logger.error("Error fetching next available slot",ex);
+        }finally {
+            dataBaseConfig.closeConnection(con);
+        }
+        return result;
     }
 }
