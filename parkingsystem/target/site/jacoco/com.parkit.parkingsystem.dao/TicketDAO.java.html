@@ -86,5 +86,30 @@ import java.sql.Timestamp;
         }
 <span class="nc" id="L87">        return false;</span>
     }
+
+    public int getNbTicket(String vehicleRegNumber){
+        /*
+        search database for vehicleRegNumber
+        ResultSet from query : SELECT COUNT(*) FROM ticket WHERE VEHICLE_REG_NUMBER=vehicleRegNumber;
+        NbTicket = number of results in ResultSet*/
+<span class="fc" id="L95">        Connection con = null;</span>
+<span class="fc" id="L96">        int result=-1;</span>
+        try {
+<span class="fc" id="L98">            con = dataBaseConfig.getConnection();</span>
+<span class="fc" id="L99">            PreparedStatement ps = con.prepareStatement(DBConstants.GET_NUMBER_OF_TICKETS);</span>
+<span class="fc" id="L100">            ps.setString(1, vehicleRegNumber);</span>
+<span class="fc" id="L101">            ResultSet rs = ps.executeQuery();</span>
+<span class="pc bpc" id="L102" title="1 of 2 branches missed.">            if(rs.next()){</span>
+<span class="fc" id="L103">                result = rs.getInt(1);</span>
+            }
+<span class="fc" id="L105">            dataBaseConfig.closeResultSet(rs);</span>
+<span class="fc" id="L106">            dataBaseConfig.closePreparedStatement(ps);</span>
+<span class="nc" id="L107">        }catch (Exception ex){</span>
+<span class="nc" id="L108">            logger.error(&quot;Error fetching next available slot&quot;,ex);</span>
+        }finally {
+<span class="fc" id="L110">            dataBaseConfig.closeConnection(con);</span>
+        }
+<span class="fc" id="L112">        return result;</span>
+    }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
