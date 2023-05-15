@@ -27,7 +27,7 @@ public class ParkingService {
         this.ticketDAO = ticketDAO;
     }
 
-    public void processIncomingVehicle() {
+    public void processIncomingVehicle() throws Exception{
         try{
             ParkingSpot parkingSpot = getNextParkingNumberIfAvailable();
             if(parkingSpot !=null && parkingSpot.getId() > 0){
@@ -54,6 +54,7 @@ public class ParkingService {
             }
         }catch(Exception e){
             logger.error("Unable to process incoming vehicle",e);
+            throw e;
         }
     }
 
@@ -62,7 +63,7 @@ public class ParkingService {
         return inputReaderUtil.readVehicleRegistrationNumber();
     }
 
-    public ParkingSpot getNextParkingNumberIfAvailable(){
+    public ParkingSpot getNextParkingNumberIfAvailable() throws IllegalArgumentException, Exception {
         int parkingNumber=0;
         ParkingSpot parkingSpot = null;
         try{
@@ -75,8 +76,10 @@ public class ParkingService {
             }
         }catch(IllegalArgumentException ie){
             logger.error("Error parsing user input for type of vehicle", ie);
+            throw ie;
         }catch(Exception e){
             logger.error("Error fetching next available parking slot", e);
+            throw e;
         }
         return parkingSpot;
     }
@@ -91,6 +94,7 @@ public class ParkingService {
                 return ParkingType.CAR;
             }
             case 2: {
+                System.out.println("ParkingType.getVehichleType : BIKE branch");
                 return ParkingType.BIKE;
             }
             default: {

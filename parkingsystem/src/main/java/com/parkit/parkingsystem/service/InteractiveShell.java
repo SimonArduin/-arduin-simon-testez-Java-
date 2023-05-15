@@ -25,7 +25,11 @@ public class InteractiveShell {
             int option = inputReaderUtil.readSelection();
             switch(option){
                 case 1: {
-                    parkingService.processIncomingVehicle();
+                    try{
+                        parkingService.processIncomingVehicle();
+                    } catch(Exception e){
+                        logger.error("Unable to process incoming vehicle",e);
+                    }
                     break;
                 }
                 case 2: {
