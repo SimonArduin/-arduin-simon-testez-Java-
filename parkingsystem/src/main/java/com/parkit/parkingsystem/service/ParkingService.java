@@ -94,7 +94,6 @@ public class ParkingService {
                 return ParkingType.CAR;
             }
             case 2: {
-                System.out.println("ParkingType.getVehichleType : BIKE branch");
                 return ParkingType.BIKE;
             }
             default: {

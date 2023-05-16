@@ -25,12 +25,12 @@ public class TicketDAO {
             con = dataBaseConfig.getConnection();
             PreparedStatement ps = con.prepareStatement(DBConstants.SAVE_TICKET);
             //ID, PARKING_NUMBER, VEHICLE_REG_NUMBER, PRICE, IN_TIME, OUT_TIME)
-            //ps.setInt(1,ticket.getId());
-            ps.setInt(1,ticket.getParkingSpot().getId());
-            ps.setString(2, ticket.getVehicleRegNumber());
-            ps.setDouble(3, ticket.getPrice());
-            ps.setTimestamp(4, new Timestamp(ticket.getInTime().getTime()));
-            ps.setTimestamp(5, (ticket.getOutTime() == null)?null: (new Timestamp(ticket.getOutTime().getTime())) );
+            ps.setInt(1,ticket.getId());
+            ps.setInt(2,ticket.getParkingSpot().getId());
+            ps.setString(3, ticket.getVehicleRegNumber());
+            ps.setDouble(4, ticket.getPrice());
+            ps.setTimestamp(5, new Timestamp(ticket.getInTime().getTime()));
+            ps.setTimestamp(6, (ticket.getOutTime() == null)?null: (new Timestamp(ticket.getOutTime().getTime())) );
             return ps.execute();
         }catch (Exception ex){
             logger.error("Error fetching next available slot",ex);
@@ -51,9 +51,9 @@ public class TicketDAO {
             ResultSet rs = ps.executeQuery();
             if(rs.next()){
                 ticket = new Ticket();
+                ticket.setId(rs.getInt(2));
                 ParkingSpot parkingSpot = new ParkingSpot(rs.getInt(1), ParkingType.valueOf(rs.getString(6)),false);
                 ticket.setParkingSpot(parkingSpot);
-                ticket.setId(rs.getInt(2));
                 ticket.setVehicleRegNumber(vehicleRegNumber);
                 ticket.setPrice(rs.getDouble(3));
                 ticket.setInTime(rs.getTimestamp(4));
@@ -74,9 +74,11 @@ public class TicketDAO {
         try {
             con = dataBaseConfig.getConnection();
             PreparedStatement ps = con.prepareStatement(DBConstants.UPDATE_TICKET);
+            //PRICE, IN_TIME, OUT_TIME, ID
             ps.setDouble(1, ticket.getPrice());
-            ps.setTimestamp(2, new Timestamp(ticket.getOutTime().getTime()));
-            ps.setInt(3,ticket.getId());
+            ps.setTimestamp(2, new Timestamp(ticket.getInTime().getTime()));
+            ps.setTimestamp(3, new Timestamp(ticket.getOutTime().getTime()));
+            ps.setInt(4,ticket.getId());
             ps.execute();
             return true;
         }catch (Exception ex){
@@ -88,10 +90,6 @@ public class TicketDAO {
     }
 
     public int getNbTicket(String vehicleRegNumber){
-        /*
-        search database for vehicleRegNumber
-        ResultSet from query : SELECT COUNT(*) FROM ticket WHERE VEHICLE_REG_NUMBER=vehicleRegNumber;
-        NbTicket = number of results in ResultSet*/
         Connection con = null;
         int result=-1;
         try {
