@@ -1,0 +1,20 @@
+{
+    "commands": {
+        "Clean Install": "cd parkingsystem && mvn clean install",
+        "Clean Install (skip tests)": "cd parkingsystem && mvn clean install -DskipTests",
+        "Compile": "cd parkingsystem && mvn compile",
+        "Verify": "cd parkingsystem && mvn verify",
+        "Run": "java -jar parkingsystem/target/parking-system-1.0-SNAPSHOT-jar-with-dependencies.jar",
+        "Tests": "cd parkingsystem && mvn test",
+        "Site": "cd parkingsystem && mvn site"
+    },
+    "preview": {
+        "Maven Site": "https://{{domain}}/parkingsystem/target/site/index.html",
+        "Virtual Desktop": "https://{{domain3000}}/",
+        "Project Index (static)": "https://{{domain}}/{{index}}",
+        "Current File (static)": "https://{{domain}}/{{filepath}}",
+        "Box URL": "http://{{domain3000}}/",
+        "Box URL SSL": "https://{{domain3000}}/"
+    },
+    "debugger": [{"type":"JAVA","command":"-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5105","before":"","uuid":"7b90c15c-49e3-c5ce-b29d-5b05278d64de","name":"JavaTarget"},{"type":"JAVA","command":"-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5105","before":"javac -g -d . {{filepath}} && java -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5105 {{filepath}} ","single":true,"path":"{{filepath}}","args":"","rootFolder":"","uuid":"faf931d0-ab71-2605-e3e7-030ab3b52754","name":"SingleJavaFile"}]
+}

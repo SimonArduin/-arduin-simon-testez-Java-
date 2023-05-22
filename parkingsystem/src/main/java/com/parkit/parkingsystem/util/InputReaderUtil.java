@@ -11,6 +11,7 @@ public class InputReaderUtil {
     private static final Logger logger = LogManager.getLogger("InputReaderUtil");
 
     public int readSelection() {
+            System.out.println("-----InputReaderUtil.readSelection");
         try {
             int input = Integer.parseInt(scan.nextLine());
             return input;
