@@ -23,7 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ParkingDataBaseIT {
@@ -40,7 +40,7 @@ public class ParkingDataBaseIT {
     private static InputReaderUtil inputReaderUtil;
 
     @BeforeAll
-    private static void setUp() throws Exception{
+    private static void setUp() throws Exception {
         parkingSpotDAO = new ParkingSpotDAO();
         parkingSpotDAO.dataBaseConfig = dataBaseTestConfig;
         ticketDAO = new TicketDAO();
@@ -50,7 +50,8 @@ public class ParkingDataBaseIT {
 
     @BeforeEach
     private void setUpPerTest() throws Exception {
-        when(inputReaderUtil.readSelection()).thenReturn(1);
+        //setting up standard conditions for testing
+        lenient().when(inputReaderUtil.readSelection()).thenReturn(1); //when asked a vehicle type, user chooses "car"
         when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn(vehicleRegNumber);
         dataBasePrepareService.clearDataBaseEntries();
     }
@@ -62,87 +63,101 @@ public class ParkingDataBaseIT {
 
     @Test
     public void testParkingACar(){
+        //given standard conditions
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
 
+        //when an incoming vehicle is processed
         try{
             parkingService.processIncomingVehicle();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+        //then there is exactly 1 ticket with this vehicleRegNumber in the database
         assertEquals(ticketDAO.getNbTicket(vehicleRegNumber), 1);
+
+        //then the parking spot of the ticket is not available
         Ticket ticket = ticketDAO.getTicket(vehicleRegNumber);
         ParkingSpot parkingSpot = ticket.getParkingSpot();
         assertFalse(parkingSpot.isAvailable());
-        //TODO: check that a ticket is actualy saved in DB and Parking table is updated with availability
     }
 
     @Test
     public void testParkingLotExit(){
-        testParkingACar();
-        Ticket ticket = ticketDAO.getTicket(vehicleRegNumber);
+        //given standard conditions
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
-        parkingService.processExitingVehicle();
-        //TODO: check that the fare generated and out time are populated correctly in the database
 
+        //given there is an open ticket for the vehicle in the database
+        Ticket ticket = new Ticket();
+        Date inTime = new Date();
+        ticket.setParkingSpot(new ParkingSpot(1, ParkingType.CAR,false));
+        ticket.setVehicleRegNumber(vehicleRegNumber);
+        ticket.setInTime(inTime);
+        ticketDAO.saveTicket(ticket);
+
+        //when an exiting vehicle is processed
+        try {
+            Thread.sleep(2000);
+            /*database rounds time to nearest second
+            can cause ticket.outTime to be before ticket.inTime
+            which causes ticket.calculateFare() to return an exception */
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        parkingService.processExitingVehicle();
+
+        //then the ticket recorded in the database has the correct outTime
         ticket = ticketDAO.getTicket(vehicleRegNumber);
-        //check correct time in database
         Date expectedOutTime = new Date();
         Date ticketOutTime = ticket.getOutTime();
-        assertNotEquals(null, ticket.getOutTime());
-        assertEquals(ticket.getOutTime().getTime(), expectedOutTime.getTime(), 1000);
+        assertEquals(ticket.getOutTime().getTime(), expectedOutTime.getTime(), 500);
+        /*ticket.getOutTime and expectedOutTime are not exactly equal
+        because the database rounds time to the nearest second */
 
-        //check correct fare in database
+        //then the ticket recorded in the database has a price
         assertNotEquals(null, ticket.getPrice());
     }
 
     @Test
     public void testParkingLotExitRecurringUser(){
-        FareCalculatorService fareCalculatorService =  new FareCalculatorService();
+        //given standard conditions
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
-        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR,false);
-        try {
-            parkingSpot = parkingService.getNextParkingNumberIfAvailable();
-        } catch(Exception e){
-            e.printStackTrace();
-        }
-        Date firstInTime = new Date();
-        Date firstOutTime = new Date();
-        Date secondInTime = new Date();
-        Date secondOutTime = new Date();
 
-        //add first ticket to database
-        firstInTime.setTime(System.currentTimeMillis() - 5 * hourInMillis);
-        firstOutTime.setTime(System.currentTimeMillis() - 3 * hourInMillis);
+        //given there is a previous ticket for the vehicle in the database
+        Date currentTime = new Date();
+        FareCalculatorService fareCalculatorService =  new FareCalculatorService();
         Ticket firstTicket = new Ticket();
-        firstTicket.setParkingSpot(parkingSpot);
+        firstTicket.setParkingSpot(new ParkingSpot(1, ParkingType.CAR,false));
         firstTicket.setVehicleRegNumber(vehicleRegNumber);
         firstTicket.setPrice(0);
-        firstTicket.setInTime(firstInTime);
-        firstTicket.setOutTime(firstOutTime);
+        firstTicket.setInTime(new Date(currentTime.getTime() - 5 * hourInMillis));
+        firstTicket.setOutTime(new Date(currentTime.getTime() - 3 * hourInMillis));
         ticketDAO.saveTicket(firstTicket);
         fareCalculatorService.calculateFare(firstTicket);
         
-        //enter vehicle
+        //given the vehicle has been parked for 2 hours
         try{
             parkingService.processIncomingVehicle();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
-        //set second ticket inTime to 2 hours ago
         Ticket secondTicket = ticketDAO.getTicket(vehicleRegNumber);
-        secondInTime = secondTicket.getInTime();
-        secondInTime.setTime(secondInTime.getTime() - 2 * hourInMillis);
-        secondTicket.setInTime(secondInTime);
-        secondOutTime.setTime(System.currentTimeMillis());
-        secondTicket.setOutTime(secondOutTime);
+        currentTime.setTime(System.currentTimeMillis());
+        secondTicket.setInTime(new Date(currentTime.getTime() - 2 * hourInMillis));
+        secondTicket.setOutTime(currentTime);
         ticketDAO.updateTicket(secondTicket);
 
-        //exit vehicle
+        //when the exiting vehicle is processed
         parkingService.processExitingVehicle();
+
+        //then the price of the second ticket is discounted
         secondTicket = ticketDAO.getTicket(vehicleRegNumber);
-        assertEquals(fareCalculatorService.discountRate * firstTicket.getPrice(), secondTicket.getPrice(), 0.01);
+        assertEquals(fareCalculatorService.discountRate * firstTicket.getPrice(), secondTicket.getPrice(), 0.005);
+        /*ticket prices may not be mathematically equal
+        because the database rounds time to nearest second
+        which can cause the duration of the two tickets to be slightly different
+        they should not be different by more than a cent */
     }
 
 }
