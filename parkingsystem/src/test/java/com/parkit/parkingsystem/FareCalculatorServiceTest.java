@@ -176,7 +176,7 @@ public class FareCalculatorServiceTest {
         //given a ticket for 30 minutes for a car
         Date currentTime = new Date();
         ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR,false);
-        ticket.setInTime(new Date(currentTime.getTime() - (long) (fareCalculatorService.freeDuration * 60) * minuteInMillis));
+        ticket.setInTime(new Date(currentTime.getTime() - (long) fareCalculatorService.freeDuration * hourInMillis));
         ticket.setOutTime(currentTime);
         ticket.setParkingSpot(parkingSpot);
 
@@ -192,7 +192,7 @@ public class FareCalculatorServiceTest {
         //given a ticket for 30 minutes for a bike
         Date currentTime = new Date();
         ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.BIKE,false);
-        ticket.setInTime(new Date(currentTime.getTime() - (long) (fareCalculatorService.freeDuration * 60) * minuteInMillis));
+        ticket.setInTime(new Date(currentTime.getTime() - (long) fareCalculatorService.freeDuration * hourInMillis));
         ticket.setOutTime(currentTime);
         ticket.setParkingSpot(parkingSpot);
 

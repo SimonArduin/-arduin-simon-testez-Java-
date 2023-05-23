@@ -117,7 +117,7 @@ public class ParkingServiceTest {
     @Test
     public void testProcessIncomingVehicleIfBike(){
         /*given standard conditions
-        except that the incoming vehilce is a bike */
+        except that the incoming vehicle is a bike */
 
         when(inputReaderUtil.readSelection()).thenReturn(2);
 
@@ -157,6 +157,24 @@ public class ParkingServiceTest {
     @Test
     public void processExitingVehicleTest(){
         //given standard conditions
+        //when an exiting vehicle is processed
+        parkingService.processExitingVehicle();
+        
+        //then the following methods are called
+        verify(parkingSpotDAO, Mockito.times(1)).updateParking(any(ParkingSpot.class));
+        verify(ticketDAO, Mockito.times(1)).getNbTicket(anyString());
+    }
+
+    @Test
+    public void processExitingVehicleTestIfBike(){
+        /*given standard conditions
+        except that the vehicel is a bike*/
+        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.BIKE,false);
+        Ticket ticket = new Ticket();
+        ticket.setInTime(new Date(System.currentTimeMillis() - (hourInMillis)));
+        ticket.setParkingSpot(parkingSpot);
+        ticket.setVehicleRegNumber(vehicleRegNumber);
+
         //when an exiting vehicle is processed
         parkingService.processExitingVehicle();
         
