@@ -8,43 +8,45 @@ import com.parkit.parkingsystem.model.Ticket;
 <span class="fc" id="L8">    public double freeDuration = 0.5;</span>
 <span class="fc" id="L9">    public double discountRate = 0.95;</span>
 
+<span class="fc" id="L11">    private long hourInMillis = 60 * 60 * 1000;</span>
+
     public void calculateFare(Ticket ticket, boolean discount){
-<span class="fc bfc" id="L12" title="All 2 branches covered.">        if( (ticket.getInTime() == null)){</span>
-<span class="fc" id="L13">            throw new IllegalArgumentException(&quot;In time provided is incorrect: NULL&quot;);</span>
+<span class="fc bfc" id="L14" title="All 2 branches covered.">        if( (ticket.getInTime() == null)){</span>
+<span class="fc" id="L15">            throw new IllegalArgumentException(&quot;In time provided is incorrect: NULL&quot;);</span>
         }
-<span class="fc bfc" id="L15" title="All 4 branches covered.">        if( (ticket.getOutTime() == null) || (ticket.getOutTime().before(ticket.getInTime())) ){</span>
-<span class="fc bfc" id="L16" title="All 2 branches covered.">            throw new IllegalArgumentException(&quot;Out time provided is incorrect:&quot; + ((ticket.getOutTime() == null) ? &quot;NULL&quot; : ticket.getOutTime().toString()));</span>
+<span class="fc bfc" id="L17" title="All 4 branches covered.">        if( (ticket.getOutTime() == null) || (ticket.getOutTime().before(ticket.getInTime())) ){</span>
+<span class="fc bfc" id="L18" title="All 2 branches covered.">            throw new IllegalArgumentException(&quot;Out time provided is incorrect:&quot; + ((ticket.getOutTime() == null) ? &quot;NULL&quot; : ticket.getOutTime().toString()));</span>
         }
 
         //calculate parking duration
-<span class="fc" id="L20">        double inTime = ticket.getInTime().getTime();</span>
-<span class="fc" id="L21">        double outTime = ticket.getOutTime().getTime();</span>
-<span class="fc" id="L22">        double duration = (outTime - inTime) / (60 * 60 * 1000);</span>
+<span class="fc" id="L22">        double inTime = ticket.getInTime().getTime();</span>
+<span class="fc" id="L23">        double outTime = ticket.getOutTime().getTime();</span>
+<span class="fc" id="L24">        double duration = (outTime - inTime) / (hourInMillis);</span>
 
         //calculate ticket price
-<span class="fc bfc" id="L25" title="All 2 branches covered.">        if(duration &lt;= freeDuration){</span>
-<span class="fc" id="L26">            ticket.setPrice(0);</span>
+<span class="fc bfc" id="L27" title="All 2 branches covered.">        if(duration &lt;= freeDuration){</span>
+<span class="fc" id="L28">            ticket.setPrice(0);</span>
         } else {
-<span class="fc bfc" id="L28" title="All 3 branches covered.">            switch (ticket.getParkingSpot().getParkingType()){</span>
+<span class="fc bfc" id="L30" title="All 3 branches covered.">            switch (ticket.getParkingSpot().getParkingType()){</span>
                 case CAR: {
-<span class="fc" id="L30">                    ticket.setPrice(duration * Fare.CAR_RATE_PER_HOUR);</span>
-<span class="fc" id="L31">                    break;</span>
+<span class="fc" id="L32">                    ticket.setPrice(duration * Fare.CAR_RATE_PER_HOUR);</span>
+<span class="fc" id="L33">                    break;</span>
                 }
                 case BIKE: {
-<span class="fc" id="L34">                    ticket.setPrice(duration * Fare.BIKE_RATE_PER_HOUR);</span>
-<span class="fc" id="L35">                    break;</span>
+<span class="fc" id="L36">                    ticket.setPrice(duration * Fare.BIKE_RATE_PER_HOUR);</span>
+<span class="fc" id="L37">                    break;</span>
                 }
-<span class="fc" id="L37">                default: throw new IllegalArgumentException(&quot;Unkown Parking Type&quot;);</span>
+<span class="fc" id="L39">                default: throw new IllegalArgumentException(&quot;Unkown Parking Type&quot;);</span>
             }
         }
-<span class="fc bfc" id="L40" title="All 2 branches covered.">        if(discount){</span>
-<span class="fc" id="L41">            ticket.setPrice(discountRate * ticket.getPrice());</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">        if(discount){</span>
+<span class="fc" id="L43">            ticket.setPrice(discountRate * ticket.getPrice());</span>
         }
 
-<span class="fc" id="L44">    }</span>
+<span class="fc" id="L46">    }</span>
 
     public void calculateFare(Ticket ticket){
-<span class="fc" id="L47">        calculateFare(ticket, false);</span>
-<span class="fc" id="L48">    }</span>
+<span class="fc" id="L49">        calculateFare(ticket, false);</span>
+<span class="fc" id="L50">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

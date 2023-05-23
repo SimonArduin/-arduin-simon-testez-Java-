@@ -92,19 +92,10 @@ public class ParkingDataBaseIT {
         Date inTime = new Date();
         ticket.setParkingSpot(new ParkingSpot(1, ParkingType.CAR,false));
         ticket.setVehicleRegNumber(vehicleRegNumber);
-        ticket.setInTime(inTime);
+        ticket.setInTime(new Date(inTime.getTime() - hourInMillis));
         ticketDAO.saveTicket(ticket);
 
         //when an exiting vehicle is processed
-        try {
-            Thread.sleep(2000);
-            /*database rounds time to nearest second
-            can cause ticket.outTime to be before ticket.inTime
-            which causes ticket.calculateFare() to return an exception */
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
         parkingService.processExitingVehicle();
 
         //then the ticket recorded in the database has the correct outTime
